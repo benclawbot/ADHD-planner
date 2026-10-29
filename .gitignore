@@ -1,0 +1,39 @@
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Local application data and backups
+.data/
+data/
+store.json
+store.json.*
+*.sqlite
+*.sqlite3
+*.db
+*.db-*
+*.backup
+*.bak
+
+# Dependencies, caches, logs, and generated output
+node_modules/
+__pycache__/
+*.py[cod]
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+coverage/
+dist/
+build/
+
+# Local source attachments and visual review captures
+.codex-attachments/
+.impeccable/
+
+# OS/editor metadata
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

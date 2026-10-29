@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Settings · Tempo</title><style>/* latin-ext */
+@font-face {
+  font-family: 'Atkinson Hyperlegible';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../assets/fonts/atkinson-e15e89caea888e8d.woff2") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Atkinson Hyperlegible';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../assets/fonts/atkinson-a60206dd4793eb88.woff2") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Atkinson Hyperlegible';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../assets/fonts/atkinson-69b1029853229409.woff2") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Atkinson Hyperlegible';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../assets/fonts/atkinson-1cc7c0c5fbf16d1b.woff2") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+
+    body { margin: 0; }
+
+html,body{margin:0;min-height:100%;}button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid #C17A3A;outline-offset:2px;}
+.sync-card{gap:10px;padding:0 14px 14px!important}.sync-status-detail,.sync-copy{margin:0;color:#4A5565;font-size:14px;line-height:1.45}.sync-auth{display:grid;gap:10px;padding:12px 0;border-top:1px solid #E1E6EE;border-bottom:1px solid #E1E6EE}.sync-auth label{display:grid;gap:5px;font-size:14px;font-weight:700}.sync-auth input{box-sizing:border-box;width:100%;min-height:44px;border:1px solid #AAB5C4;border-radius:8px;padding:8px 10px;background:#FFFFFF;color:#1B2430;font:inherit}.sync-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:2px}.sync-actions button,.sync-history-actions button{min-height:42px;border:1px solid #1B2430;border-radius:9px;padding:6px 12px;background:#FFFFFF;color:#1B2430;font:inherit;font-size:14px;font-weight:700;cursor:pointer}.sync-actions button.primary{background:#2B5FC4;border-color:#2B5FC4;color:#FFFFFF}.sync-actions button:disabled,.sync-history-actions button:disabled{opacity:.55;cursor:not-allowed}.sync-conflict{display:grid;gap:8px;padding:10px 0;border-top:1px solid #E1E6EE}.sync-conflict p,.sync-history-empty{margin:0;color:#4A5565;font-size:14px;line-height:1.45}.sync-history{display:grid;gap:8px;padding-top:6px;border-top:1px solid #E1E6EE}.sync-history-list{display:grid;gap:8px}.sync-history-item{display:grid;gap:6px;padding:10px 0;border-bottom:1px solid #E1E6EE}.sync-history-item strong{font-size:15px;overflow-wrap:anywhere}.sync-history-item>span{color:#4A5565;font-size:13px;line-height:1.4}.sync-history-actions{display:flex;flex-wrap:wrap;gap:8px}.sync-recovery-note{margin:0;color:#4A5565;font-size:13px;line-height:1.4}[hidden]{display:none!important}</style></head><body>
+
+<div style="width: 390px; height: 844px; box-sizing: border-box; padding: 56px 20px 24px; display: flex; flex-direction: column; gap: 16px; background: #F5F7F9; color: #1B2430; font-family: 'Atkinson Hyperlegible', system-ui, sans-serif; overflow-y: auto; overflow-x: hidden">
+  <span style="font-size: 28px; font-weight: 700">Settings</span>
+
+  <div style="display: flex; flex-direction: column; gap: 8px">
+    <span style="font-size: 13px; font-weight: 700; color: #4A5565; letter-spacing: 0.05em; text-transform: uppercase">Accommodations</span>
+    <div style="background: #FFFFFF; border-radius: 14px; padding: 0 14px; display: flex; flex-direction: column">
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 52px; border-bottom: 1px solid #E1E6EE">
+        <div style="display: flex; flex-direction: column"><span style="font-size: 16px; font-weight: 700">Transition warnings</span><span style="font-size: 13px; color: #4A5565">5 min before you switch tasks</span></div>
+        <div style="flex: 0 0 52px; width: 52px; height: 30px; border-radius: 15px; background: #2B5FC4; position: relative"><div style="position: absolute; right: 4px; top: 4px; width: 22px; height: 22px; border-radius: 11px; background: #FFFFFF"></div></div>
+      </div>
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 52px; border-bottom: 1px solid #E1E6EE">
+        <div style="display: flex; flex-direction: column"><span style="font-size: 16px; font-weight: 700">Persistent reminders</span><span style="font-size: 13px; color: #4A5565">Repeat every 10 min until done</span></div>
+        <div style="flex: 0 0 52px; width: 52px; height: 30px; border-radius: 15px; background: #2B5FC4; position: relative"><div style="position: absolute; right: 4px; top: 4px; width: 22px; height: 22px; border-radius: 11px; background: #FFFFFF"></div></div>
+      </div>
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 52px; border-bottom: 1px solid #E1E6EE">
+        <div style="display: flex; flex-direction: column"><span style="font-size: 16px; font-weight: 700">Flexible recurring tasks</span><span style="font-size: 13px; color: #4A5565">Water plants this week, not a fixed day</span></div>
+        <div style="flex: 0 0 52px; width: 52px; height: 30px; border-radius: 15px; background: #2B5FC4; position: relative"><div style="position: absolute; right: 4px; top: 4px; width: 22px; height: 22px; border-radius: 11px; background: #FFFFFF"></div></div>
+      </div>
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 52px; border-bottom: 1px solid #E1E6EE">
+        <div style="display: flex; flex-direction: column"><span style="font-size: 16px; font-weight: 700">No-guilt rescheduling</span><span style="font-size: 13px; color: #4A5565">No overdue count, no broken streaks</span></div>
+        <div style="flex: 0 0 52px; width: 52px; height: 30px; border-radius: 15px; background: #2B5FC4; position: relative"><div style="position: absolute; right: 4px; top: 4px; width: 22px; height: 22px; border-radius: 11px; background: #FFFFFF"></div></div>
+      </div>
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 52px; border-bottom: 1px solid #E1E6EE">
+        <div style="display: flex; flex-direction: column"><span style="font-size: 16px; font-weight: 700">Hyperfocus check-ins</span><span style="font-size: 13px; color: #4A5565">Every 60 min in Focus mode</span></div>
+        <div style="flex: 0 0 52px; width: 52px; height: 30px; border-radius: 15px; background: #2B5FC4; position: relative"><div style="position: absolute; right: 4px; top: 4px; width: 22px; height: 22px; border-radius: 11px; background: #FFFFFF"></div></div>
+      </div>
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 52px">
+        <div style="display: flex; flex-direction: column"><span style="font-size: 16px; font-weight: 700">Low-stimulation mode</span><span style="font-size: 13px; color: #4A5565">Muted colours, no badges, batched alerts</span></div>
+        <div style="flex: 0 0 52px; width: 52px; height: 30px; border-radius: 15px; background: #C2CAD6; position: relative"><div style="position: absolute; left: 4px; top: 4px; width: 22px; height: 22px; border-radius: 11px; background: #FFFFFF"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <section style="display: flex; flex-direction: column; gap: 8px" aria-labelledby="sync-heading">
+    <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px">
+      <span id="sync-heading" style="font-size: 13px; font-weight: 700; color: #4A5565; letter-spacing: 0.05em; text-transform: uppercase">Sync</span>
+      <span id="sync-status-label" role="status" aria-live="polite" style="font-size: 14px; color: #1B4FA8; font-weight: 700">Not linked</span>
+    </div>
+    <div class="sync-card" style="background: #FFFFFF; border-radius: 14px; display: flex; flex-direction: column">
+      <div style="display: flex; flex-direction: column; gap: 5px; min-height: 52px; justify-content: center; border-bottom: 1px solid #E1E6EE">
+        <span style="font-size: 16px; font-weight: 700">Sync across devices</span>
+        <p id="sync-status-detail" class="sync-status-detail" aria-live="polite">Your plan is saved in this browser. Sign in to sync it across devices.</p>
+      </div>
+      <form id="sync-auth-form" class="sync-auth">
+        <label>Email<input name="email" type="email" autocomplete="username" required></label>
+        <label>Password<input name="password" type="password" autocomplete="current-password" required></label>
+        <p class="sync-copy">Your password is sent only to this Tempo server. The sign-in token is kept on this device.</p>
+        <div class="sync-actions">
+          <button class="primary" type="submit" value="login">Sign in</button>
+          <button type="submit" value="register">Create account</button>
+        </div>
+      </form>
+      <div id="sync-account-panel" hidden>
+        <p class="sync-copy">Signed in as <strong id="sync-account-email"></strong>. Your plan stays available offline.</p>
+        <div class="sync-actions">
+          <button id="sync-now" type="button" class="primary">Sync now</button>
+          <button id="sync-logout" type="button">Sign out</button>
+        </div>
+      </div>
+      <section id="sync-conflict-panel" class="sync-conflict" aria-live="polite" hidden>
+        <p id="sync-conflict-message"></p>
+        <div class="sync-actions">
+          <button type="button" data-sync-resolve="local" class="primary">Use this device copy</button>
+          <button type="button" data-sync-resolve="server">Use server copy</button>
+          <button type="button" id="sync-download-conflict">Download both copies</button>
+        </div>
+      </section>
+      <div class="sync-actions">
+        <button type="button" id="sync-download-recovery" hidden>Download local recovery</button>
+        <button type="button" id="sync-download-account-recovery" hidden>Download previous local copy</button>
+      </div>
+      <p id="sync-account-recovery-note" class="sync-recovery-note" hidden>A previous account’s local copy is kept in this browser. Download it before importing it into this account.</p>
+      <div class="sync-history">
+        <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 12px">
+          <strong style="font-size: 16px">Version history</strong>
+          <button type="button" id="sync-history-load" class="sync-actions-button" style="min-height: 40px; border: 1px solid #1B2430; border-radius: 9px; padding: 6px 12px; background: #FFFFFF; color: #1B2430; font: inherit; font-size: 14px; font-weight: 700">View history</button>
+        </div>
+        <p class="sync-copy">Alternate versions are kept for 30 days. If a sync base expires, Tempo pauses; queued edits stay on this device and the server copy stays online until you choose a version. Download both copies first if you need to combine them manually.</p>
+        <div id="sync-history-list" class="sync-history-list"></div>
+      </div>
+      <button id="backup-export" type="button" style="min-height: 46px; margin-top: 2px; border: 1px solid #1B2430; border-radius: 10px; background: transparent; color: #1B2430; font: inherit; font-size: 15px; font-weight: 700">Export backup</button>
+    </div>
+  </section>
+</div>
+</body></html>
