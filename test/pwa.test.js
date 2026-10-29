@@ -13,7 +13,7 @@ async function loadWorker() {
     addAll: async paths => { for (const url of paths) { await readFile(path.join(process.cwd(), url === '/src/' ? 'src/index.html' : url.slice(1))); shell.push(url); cache.set(url, { cached: url }); } },
     put: async (request, response) => cache.set(request.url, response),
   };
-  const caches = { open: async () => cacheStore, keys: async () => ['tempo-shell-v0','tempo-shell-v1','tempo-shell-v2','tempo-shell-v3','tempo-shell-v4','tempo-shell-v5','tempo-shell-v6','tempo-shell-v7','another-app'], delete: async key => deleted.push(key), match: async request => cache.get(new URL(request.url).pathname) };
+  const caches = { open: async () => cacheStore, keys: async () => ['tempo-shell-v0','tempo-shell-v1','tempo-shell-v2','tempo-shell-v3','tempo-shell-v4','tempo-shell-v5','tempo-shell-v6','tempo-shell-v7','tempo-shell-v8','tempo-shell-v9','tempo-shell-v10','tempo-shell-v11','another-app'], delete: async key => deleted.push(key), match: async request => cache.get(new URL(request.url).pathname) };
   const self = { addEventListener: (name, handler) => handlers[name] = handler, skipWaiting: async () => {}, clients: { claim: async () => {} }, location: {origin:'https://tempo.example'} };
   vm.runInNewContext(await readFile('src/sw.js','utf8'), {self, caches, URL, Promise, fetch: async () => { throw Error('offline'); }});
   return {handlers, shell, deleted};
@@ -31,7 +31,7 @@ test('PWA precaches all listed assets, serves a cached page offline and preserve
   assert.ok(shell.includes('/src/voice-worker.js'));
   assert.ok(!shell.includes('/src/vendor/transformers/ort-wasm-simd-threaded.jsep.wasm'), 'the large WASM asset is lazy-loaded, not part of the app shell');
   handlers.activate({waitUntil: p => {promise = p;}}); await promise;
-  assert.deepEqual(deleted, ['tempo-shell-v0', 'tempo-shell-v1', 'tempo-shell-v2', 'tempo-shell-v3', 'tempo-shell-v4', 'tempo-shell-v5', 'tempo-shell-v6']);
+  assert.deepEqual(deleted, ['tempo-shell-v0', 'tempo-shell-v1', 'tempo-shell-v2', 'tempo-shell-v3', 'tempo-shell-v4', 'tempo-shell-v5', 'tempo-shell-v6', 'tempo-shell-v7', 'tempo-shell-v8', 'tempo-shell-v9', 'tempo-shell-v10']);
   handlers.fetch({request: {method:'GET', url:'https://tempo.example/src/templates/today.html'}, respondWith: p => {promise = p;}});
   assert.equal((await promise).cached, '/src/templates/today.html');
   let intercepted = false;

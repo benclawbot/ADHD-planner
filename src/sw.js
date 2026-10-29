@@ -1,4 +1,4 @@
-const CACHE = 'tempo-shell-v7';
+const CACHE = 'tempo-shell-v11';
 const CACHE_PREFIX = 'tempo-shell-';
 const SHELL = [
   '/src/', '/src/index.html', '/src/app.js', '/src/model.js', '/src/subtasks.js', '/src/planning.js', '/src/recurrence.js', '/src/sync-client.js', '/src/voice-capture.js', '/src/voice-worker.js', '/src/manifest.webmanifest',

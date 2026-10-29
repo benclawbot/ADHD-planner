@@ -224,6 +224,11 @@ function applyResponsive(doc, phoneView, wide) {
     .tempo-week-footer button:focus-visible{outline:3px solid #C17A3A;outline-offset:2px;border-radius:3px}
     @media(max-width:767px){.tempo-week-grid,.tempo-week-grid.weekend{grid-template-columns:minmax(0,1fr);overflow:visible}.tempo-week-track{height:400px}}
     .tempo-weekly-fields{padding:10px 12px;border-radius:10px;background:#E9EEF6;color:#1B2430;font-size:14px;line-height:1.4}.tempo-weekly-fields p{margin:0 0 8px}.tempo-weekly-history{flex-basis:100%;margin:0 4px 8px;color:#4A5565;font-size:14px;line-height:1.4}.tempo-weekly-history summary{min-height:44px;display:flex;align-items:center;cursor:pointer}.tempo-weekly-history ul{margin:4px 0 8px;padding-left:22px}.tempo-weekly-history li{margin:4px 0;font-variant-numeric:tabular-nums}
+    .tempo-task-swipe{position:relative;min-width:0;overflow:hidden;border-radius:10px;touch-action:pan-y}
+    .tempo-task-row{position:relative;z-index:1;transition:transform 160ms ease-out}
+    .tempo-task-swipe.is-revealed .tempo-task-row{transform:translateX(-84px)}
+    .tempo-task-remove{position:absolute;inset:0 0 0 auto;width:84px;border:0;background:#A93636;color:#fff;font:700 15px/1 'Atkinson Hyperlegible',system-ui,sans-serif;cursor:pointer}
+    .tempo-task-remove:focus-visible{outline:3px solid #C17A3A;outline-offset:-4px}
     .tempo-subtask-summary{padding-top:10px;border-top:1px solid #D5DCE6}.tempo-subtask-summary h3,.tempo-subtask-manager h3{margin:0 0 6px;font-size:18px}.tempo-subtask-summary p,.tempo-subtask-manager p{margin:0 0 10px;color:#4A5565;font-size:14px;line-height:1.4}.tempo-subtask-summary ol{margin:0 0 10px;padding-left:22px}.tempo-subtask-summary li{margin:4px 0;overflow-wrap:anywhere}.tempo-subtask-summary button,.tempo-subtask-manager button{min-height:44px;border:1px solid #1B2430;border-radius:9px;padding:6px 12px;background:white;color:#1B2430;font:inherit;font-weight:700;cursor:pointer}.tempo-subtask-summary button.primary,.tempo-subtask-manager button.primary{background:#2B5FC4;border-color:#2B5FC4;color:white}.tempo-subtask-manager{display:grid;gap:14px}.tempo-subtask-manager section{display:grid;gap:8px}.tempo-subtask-manager ol{display:grid;gap:8px;margin:0;padding:0;list-style:none}.tempo-subtask-item{display:grid;gap:8px;padding:10px;border:1px solid #D5DCE6;border-radius:10px;background:white}.tempo-subtask-item label{display:grid;gap:5px;font-size:14px;font-weight:700}.tempo-subtask-item input,.tempo-subtask-manager textarea{box-sizing:border-box;width:100%;min-height:44px;border:1px solid #AAB5C4;border-radius:8px;padding:8px 10px;background:white;color:#1B2430;font:inherit}.tempo-subtask-manager textarea{min-height:96px;resize:vertical}.tempo-subtask-item .actions,.tempo-subtask-manager .actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:0}.tempo-subtask-item button,.tempo-subtask-manager button{min-height:40px;font-size:14px}.tempo-subtask-item button.danger,.tempo-subtask-manager button.danger{color:#832E2E;border-color:#832E2E}.tempo-subtask-item button:disabled,.tempo-subtask-manager button:disabled{opacity:.52;cursor:not-allowed}.tempo-subtask-item button:focus-visible,.tempo-subtask-manager button:focus-visible,.tempo-subtask-manager input:focus-visible,.tempo-subtask-manager textarea:focus-visible{outline:3px solid #C17A3A;outline-offset:2px}.tempo-subtask-empty{padding:10px 12px;border-radius:10px;background:#E9EEF6;color:#1B2430;font-size:14px;line-height:1.4}.tempo-toast .tempo-toast-undo{min-height:40px;margin-left:12px;border:1px solid rgba(255,255,255,.75);border-radius:7px;padding:5px 10px;background:transparent;color:white;font:inherit;font-weight:700;cursor:pointer}
     .tempo-capture-list,.tempo-capture-group{display:grid;gap:8px}
     .tempo-capture-group{padding:4px 0}
@@ -905,6 +910,8 @@ function escapeHtml(value) {
 }
 
 function row(doc, task, actions = true) {
+  const swipe = doc.createElement('div');
+  swipe.className = 'tempo-task-swipe';
   const wrapper = doc.createElement('div');
   wrapper.className = 'tempo-task-row';
   if (task.parentCaptureId) wrapper.setAttribute('aria-label', 'Subtask linked to a saved capture');
@@ -926,7 +933,13 @@ function row(doc, task, actions = true) {
         : `Weekly · ${weeklyState.window.startDate} to ${weeklyState.window.endDate}`;
   details.textContent = [baseDetails, weeklyDetails].filter(Boolean).join(' · ');
   button.append(title, details);
-  button.addEventListener('click', () => openTaskDialog(doc, task));
+  button.addEventListener('click', () => {
+    if (swipe.classList.contains('is-revealed')) {
+      swipe.classList.remove('is-revealed');
+      return;
+    }
+    openTaskDialog(doc, task);
+  });
   wrapper.append(button);
   if (actions) {
     const edit = doc.createElement('span');
@@ -935,8 +948,63 @@ function row(doc, task, actions = true) {
       ? !weeklyState.valid ? 'Review' : weeklyState.completed ? 'Complete' : weeklyState.beforeStart ? 'Starts later' : 'This week'
       : task.status === 'done' ? 'Completed' : task.scheduledDate === todayKey() ? (task.startTime || 'Today') : task.scheduledDate ? `${task.scheduledDate}${task.startTime ? ` · ${task.startTime}` : ''}` : task.scheduleWindow === 'this-week' ? 'This week' : 'Later';
     wrapper.append(edit);
+    const remove = doc.createElement('button');
+    remove.type = 'button';
+    remove.className = 'tempo-task-remove';
+    remove.textContent = 'Remove';
+    remove.setAttribute('aria-label', `Remove ${task.title}`);
+    remove.addEventListener('focus', () => swipe.classList.add('is-revealed'));
+    remove.addEventListener('blur', () => {
+      if (!swipe.contains(doc.activeElement)) swipe.classList.remove('is-revealed');
+    });
+    remove.addEventListener('click', (event) => {
+      event.stopPropagation();
+      const current = state.tasks.find((item) => item.id === task.id);
+      if (!current || current.status === 'removed') return;
+      state = removeTask(state, current.id);
+      saveLocalState(state);
+      showUndoToast(doc, 'Task removed.', () => {
+        state = { ...state, tasks: state.tasks.map((item) => item.id === current.id ? current : item) };
+        saveLocalState(state);
+        syncScreen();
+      });
+      syncScreen();
+    });
+    swipe.append(remove);
+
+    let startX = null;
+    let startY = null;
+    let pointerId = null;
+    let didSwipe = false;
+    swipe.addEventListener('pointerdown', (event) => {
+      if (event.target.closest('button.tempo-task-remove')) return;
+      startX = event.clientX;
+      startY = event.clientY;
+      pointerId = event.pointerId;
+      didSwipe = false;
+    });
+    swipe.addEventListener('pointerup', (event) => {
+      if (pointerId !== event.pointerId || startX === null) return;
+      const dx = event.clientX - startX;
+      const dy = event.clientY - startY;
+      if (Math.abs(dx) > 48 && Math.abs(dx) > Math.abs(dy) * 1.25) {
+        didSwipe = true;
+        if (dx < 0) {
+          doc.querySelectorAll('.tempo-task-swipe.is-revealed').forEach((item) => item.classList.remove('is-revealed'));
+          swipe.classList.add('is-revealed');
+        } else swipe.classList.remove('is-revealed');
+      }
+      startX = startY = pointerId = null;
+    });
+    swipe.addEventListener('pointercancel', () => { startX = startY = pointerId = null; });
+    button.addEventListener('click', (event) => {
+      if (!didSwipe) return;
+      event.stopImmediatePropagation();
+      didSwipe = false;
+    }, true);
   }
-  return wrapper;
+  swipe.append(wrapper);
+  return swipe;
 }
 
 function setInteractive(element, label, handler) {
@@ -983,11 +1051,12 @@ function configurePlanScreen(doc, wide) {
     // Keep the sample reference layout intact while making its task controls live.
   } else {
     renderCurrentPlan(doc, wide);
-    doc.querySelectorAll('button').forEach((button) => {
-      if (button.textContent.trim() === '+3 more') button.textContent = 'Add or review tasks';
-      if (button.textContent.trim() === 'Add or review tasks') button.addEventListener('click', () => routeTo('plan'));
-    });
   }
+  doc.querySelectorAll('button').forEach((button) => {
+    if (button.textContent.trim() !== '+3 more') return;
+    button.setAttribute('aria-label', 'Open Plan to view remaining tasks');
+    button.addEventListener('click', () => routeTo('plan'));
+  });
   const tasksByTitle = new Map(activeTasks().map((task) => [task.title, task]));
   for (const element of doc.querySelectorAll('span,div')) {
     if (element.children.length) continue;
@@ -2322,16 +2391,60 @@ function configureFocus(doc) {
     });
   }
   const done = [...doc.querySelectorAll('button')].find((button) => button.textContent.trim() === 'Done');
-  if (done && !active) done.disabled = true;
+  if (done && (!active || (active.status === 'done' && active.blockClosed === true))) done.disabled = true;
   done?.addEventListener('click', () => {
-    if (state.focus) {
-      const activeTimeMs = focusActiveTime(state.focus);
-      focusRunStartedAt = null;
-      focusRunTaskId = null;
-      state = { ...state, focus: { ...state.focus, status: 'done', remainingMs: 0, dueAt: null, activeTimeMs, blockClosed: true, completedAt: new Date().toISOString() } };
+    const completedAt = new Date();
+    const focusedTask = state.tasks.find((task) => task.id === state.focus?.taskId);
+    let tasks = state.tasks;
+    let taskCompletionMessage = '';
+    if (focusedTask && focusedTask.status !== 'removed') {
+      if (focusedTask.recurrence) {
+        try {
+          const current = currentWeeklyTaskState(focusedTask, completedAt);
+          if (current.valid && !current.beforeStart && !current.completed) {
+            const result = recordWeeklyCompletion(focusedTask.recurrence, weeklyCompletionList(focusedTask), completedAt);
+            if (result.added) {
+              tasks = state.tasks.map((task) => task.id === focusedTask.id
+                ? { ...task, status: 'open', recurrenceCompletions: weeklyCompletionMap(result.completions) }
+                : task);
+              taskCompletionMessage = ' Task marked complete for this week.';
+            }
+          } else if (current.completed) {
+            taskCompletionMessage = ' This task was already complete for this week.';
+          } else {
+            taskCompletionMessage = current.beforeStart
+              ? ' This weekly task has not started yet, so it was not marked complete.'
+              : ' This task could not be marked complete. Review its weekly settings.';
+          }
+        } catch {
+          taskCompletionMessage = ' The task could not be marked complete because its weekly history needs review.';
+        }
+      } else if (focusedTask.status !== 'done') {
+        tasks = state.tasks.map((task) => task.id === focusedTask.id
+          ? { ...task, status: 'done', completedAt: completedAt.toISOString() }
+          : task);
+        taskCompletionMessage = ' Task completed.';
+      } else {
+        taskCompletionMessage = ' This task was already complete.';
+      }
     }
+    const activeTimeMs = state.focus ? focusActiveTime(state.focus) : 0;
+    focusRunStartedAt = null;
+    focusRunTaskId = null;
+    state = {
+      ...state,
+      tasks,
+      focus: state.focus
+        ? { ...state.focus, status: 'done', remainingMs: 0, dueAt: null, activeTimeMs, blockClosed: true, completedAt: completedAt.toISOString() }
+        : state.focus,
+    };
     persist();
-    showToast(doc, 'Focus session ended. Your task is still open.');
+    showToast(doc, `Focus session complete.${taskCompletionMessage || ' No associated task was available to complete.'}`);
+    if (timer) {
+      timer.textContent = 'Done';
+      timer.setAttribute('aria-label', 'Focus session done');
+    }
+    updateFocusRing(doc, 0);
   });
   for (const button of doc.querySelectorAll('button')) {
     if (['Stretch 2 min', 'Tea', 'One song'].includes(button.textContent.trim())) button.addEventListener('click', () => showToast(doc, `Break idea: ${button.textContent.trim()}. No break timer has been started.`));
