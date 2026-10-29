@@ -2445,6 +2445,8 @@ function configureFocus(doc) {
       timer.setAttribute('aria-label', 'Focus session done');
     }
     updateFocusRing(doc, 0);
+    if (control) control.textContent = 'Start';
+    if (done) done.disabled = true;
   });
   for (const button of doc.querySelectorAll('button')) {
     if (['Stretch 2 min', 'Tea', 'One song'].includes(button.textContent.trim())) button.addEventListener('click', () => showToast(doc, `Break idea: ${button.textContent.trim()}. No break timer has been started.`));
