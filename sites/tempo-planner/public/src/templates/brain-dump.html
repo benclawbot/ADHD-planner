@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Brain dump · Tempo</title><style>/* latin-ext */
+@font-face {
+  font-family: 'Atkinson Hyperlegible';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../assets/fonts/atkinson-e15e89caea888e8d.woff2") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Atkinson Hyperlegible';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../assets/fonts/atkinson-a60206dd4793eb88.woff2") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Atkinson Hyperlegible';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../assets/fonts/atkinson-69b1029853229409.woff2") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Atkinson Hyperlegible';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../assets/fonts/atkinson-1cc7c0c5fbf16d1b.woff2") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+
+    body { margin: 0; }
+  
+html,body{margin:0;min-height:100%;}button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid #C17A3A;outline-offset:2px;}</style></head><body>
+
+<div style="width: 390px; height: 844px; box-sizing: border-box; padding: 56px 20px 0; display: flex; flex-direction: column; gap: 14px; background: #F5F7F9; color: #1B2430; font-family: 'Atkinson Hyperlegible', system-ui, sans-serif; position: relative; overflow: hidden">
+  <div style="display: flex; flex-direction: column; gap: 2px">
+    <span style="font-size: 28px; font-weight: 700">Brain dump</span>
+    <span style="font-size: 15px; color: #4A5565">Type or speak everything. Sorting happens after.</span>
+  </div>
+
+  <div style="background: #FFFFFF; border: 1px solid #D5DCE6; border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 8px">
+    <label for="tempo-dump" style="font-size: 14px; color: #4A5565">What is on your mind?</label>
+    <textarea id="tempo-dump" rows="4" style="box-sizing: border-box; width: 100%; padding: 10px; border: 1px solid #C2CAD6; border-radius: 10px; font: inherit; font-size: 16px; color: #1B2430; background: #FFFFFF; resize: none">call the bank re card, budget, gym legs, reply to Marc, buy birthday card, dentist sometime</textarea>
+    <div style="display: flex; gap: 8px">
+      <button style="flex: 1; min-height: 48px; border: 0; border-radius: 10px; background: #2B5FC4; color: #FFFFFF; font: inherit; font-size: 16px; font-weight: 700">Sort into queue</button>
+      <button style="min-height: 48px; padding: 0 14px; border: 1px solid #1B2430; border-radius: 10px; background: transparent; color: #1B2430; font: inherit; font-size: 15px">Voice</button>
+    </div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 8px">
+    <span style="font-size: 14px; font-weight: 700; color: #4A5565; letter-spacing: 0.04em; text-transform: uppercase">Sorted, 6 items</span>
+    <div style="display: flex; align-items: center; justify-content: space-between; min-height: 52px; background: #FFFFFF; border-radius: 10px; padding: 0 14px; border-left: 4px solid #2B5FC4">
+      <div style="display: flex; flex-direction: column">
+        <span style="font-size: 16px; font-weight: 700">Call the bank about the card</span>
+        <span style="font-size: 13px; color: #4A5565">Phone · 10 min · needs business hours</span>
+      </div>
+      <span style="font-size: 14px; color: #1B2430">Today</span>
+    </div>
+    <div style="display: flex; align-items: center; justify-content: space-between; min-height: 52px; background: #FFFFFF; border-radius: 10px; padding: 0 14px">
+      <div style="display: flex; flex-direction: column">
+        <span style="font-size: 16px; font-weight: 700">Budget summary</span>
+        <span style="font-size: 13px; color: #4A5565">Desk · 40 min · due 17:00</span>
+      </div>
+      <span style="font-size: 14px; color: #1B2430">Today</span>
+    </div>
+    <div style="display: flex; align-items: center; justify-content: space-between; min-height: 52px; background: #FFFFFF; border-radius: 10px; padding: 0 14px">
+      <div style="display: flex; flex-direction: column">
+        <span style="font-size: 16px; font-weight: 700">Buy birthday card</span>
+        <span style="font-size: 13px; color: #4A5565">Errand · 15 min</span>
+      </div>
+      <span style="font-size: 14px; color: #1B2430">This week</span>
+    </div>
+    <div style="display: flex; align-items: center; justify-content: space-between; min-height: 52px; background: #FFFFFF; border-radius: 10px; padding: 0 14px">
+      <div style="display: flex; flex-direction: column">
+        <span style="font-size: 16px; font-weight: 700">Dentist</span>
+        <span style="font-size: 13px; color: #4A5565">Someday · no time set</span>
+      </div>
+      <span style="font-size: 14px; color: #1B2430">Later</span>
+    </div>
+  </div>
+
+  <div style="background: #E9EEF6; border-radius: 12px; padding: 12px 14px; font-size: 14px; line-height: 1.45">Nothing is due today that you did not already plan. Anything without a time goes to Later, not to your day.</div>
+
+  <div style="position: absolute; left: 0; right: 0; bottom: 0; height: 84px; box-sizing: border-box; padding-top: 10px; display: flex; justify-content: space-around; background: #FFFFFF; border-top: 1px solid #D5DCE6">
+    <span style="font-size: 14px; color: #4A5565">Today</span>
+    <span style="font-size: 14px; color: #4A5565">Plan</span>
+    <span style="font-size: 14px; color: #4A5565">Focus</span>
+    <span style="font-size: 14px; font-weight: 700; color: #1B4FA8">Brain dump</span>
+  </div>
+</div>
+</body></html>

@@ -1,0 +1,20 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1793295565467,
+      "tag": "0000_next_scarlet_spider",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1793302000000,
+      "tag": "0001_sync_commit_guard",
+      "breakpoints": true
+    }
+  ]
+}

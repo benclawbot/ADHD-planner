@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f5f7f9">
+  <meta name="description" content="Tempo Planner local-first foundation">
+  <link rel="manifest" href="/src/manifest.webmanifest">
+  <title>Tempo Planner</title>
+  <style>
+    html, body, #app { width: 100%; height: 100%; margin: 0; overflow: hidden; background: #F5F7F9; }
+    body { font-family: "Atkinson Hyperlegible", system-ui, sans-serif; }
+    #app { display: grid; place-items: center; }
+    #screen { display: block; border: 0; width: 100vw; height: 100dvh; background: #F5F7F9; }
+    #screen.phone { width: min(100vw, 390px); height: min(100dvh, 844px); }
+    #screen.centered { width: min(390px, 100vw); height: min(844px, 100dvh); }
+  </style>
+</head>
+<body>
+  <main id="app" aria-label="Tempo Planner">
+    <iframe id="screen" title="Tempo Planner screen"></iframe>
+  </main>
+  <script type="module" src="/src/app.js"></script>
+</body>
+</html>

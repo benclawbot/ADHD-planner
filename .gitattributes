@@ -1,1 +1,5 @@
 src/vendor/transformers/*.mjs -whitespace
+sites/tempo-planner/public/src/vendor/whisper-tiny/onnx/*.onnx* binary
+sites/tempo-planner/public/src/vendor/transformers/*.wasm binary
+sites/tempo-planner/public/src/vendor/transformers/*.mjs whitespace=-blank-at-eol
+sites/tempo-planner/public/src/templates/*.html whitespace=-blank-at-eol
