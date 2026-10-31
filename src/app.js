@@ -2357,17 +2357,7 @@ function configureSettings(doc) {
       try {
         const imported=parseBackup(await selected.text());
         if (!imported) throw new Error('Invalid Tempo backup');
-        const sharedLinkActive = Boolean(storage.getItem(sharedCapabilityKey));
-        if (sharedLinkActive && (sharedPlanBootstrapPending || !sharedPlanRecoveryReady)) {
-          showToast(doc, 'Wait for the shared plan to finish loading before importing a backup.');
-          file.value = '';
-          return;
-        }
-        const confirmation = sharedLinkActive
-          ? 'Replace the SHARED planner for everyone with this backup? Imported tasks and captures may overwrite the shared plan on every connected device when syncing resumes. Export the current plan first.'
-          : 'Replace the tasks and captures saved in this browser with this backup?';
-        if (!window.confirm(confirmation)) { file.value = ''; return; }
-        if (sharedLinkActive && !window.confirm('Final confirmation: replace the shared plan across devices with this backup?')) { file.value = ''; return; }
+        if (!window.confirm('Replace the tasks and captures saved in this browser with this backup?')) { file.value=''; return; }
         saveLocalState(imported); reminderNotified.clear(); transitionNotified.clear();
         routeTo('today'); showToast(frame.contentDocument,'Backup restored on this device.');
       } catch { showToast(doc,'That file is not a valid Tempo backup. Your saved data was not changed.'); }
