@@ -71,6 +71,17 @@ const syncClient = createSyncClient({
   onConflict: (conflict) => renderSyncConflict(frame.contentDocument, conflict),
 });
 
+function bindKeyboardShortcuts() {
+  window.addEventListener('keydown', (event) => {
+    if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA' || event.target.tagName === 'SELECT') return;
+    if (event.key === 'n') { event.preventDefault(); openTaskDialog(frame.contentDocument); }
+    else if (event.key === '/') { event.preventDefault(); routeTo('plan'); }
+    else if (event.key === 'Escape') { event.preventDefault(); const dialog = frame.contentDocument?.querySelector('dialog'); if (dialog?.open) dialog.close(); }
+  });
+}
+
+bindKeyboardShortcuts();
+
 function syncableState(localState) {
   const tasks = (localState.tasks ?? []).filter((task) => {
     const seed = demoSeedTasks.get(task.id);
@@ -128,7 +139,7 @@ function routeTo(route, push = true) {
 
 function routeFromLocation() {
   screenName = (window.location.hash.slice(1) || 'today').split('/')[0];
-  if (!['today', 'week', 'plan', 'focus', 'brain-dump', 'settings', 'sync'].includes(screenName)) screenName = 'today';
+  if (!['today', 'week', 'plan', 'focus', 'brain-dump', 'settings', 'sync', 'later'].includes(screenName)) screenName = 'today';
   renderScreen();
 }
 
@@ -140,6 +151,7 @@ function templateFor(route, wide) {
   if (route === 'brain-dump') return 'brain-dump.html';
   if (route === 'settings') return 'settings.html';
   if (route === 'sync') return 'sync-settings.html';
+  if (route === 'later') return 'later.html';
   return 'mobile-plan.html';
 }
 
@@ -163,6 +175,7 @@ function renderScreen() {
     if (screenName === 'settings') configureReferenceSync(doc);
     if (screenName === 'today' || screenName === 'week') configurePlanScreen(doc, wide);
     if (screenName === 'plan') configureMobilePlan(doc);
+    if (screenName === 'later') configureLater(doc);
     if (screenName === 'brain-dump') configureCapture(doc);
     if (screenName === 'focus') configureFocus(doc);
     scheduleDepartureReminder(doc);
@@ -293,7 +306,7 @@ function showToast(doc, message) {
 
 function bindNavigation(doc) {
   const labels = new Map([
-    ['Today', 'today'], ['Week', 'week'], ['Plan', 'plan'], ['Focus', 'focus'], ['Brain dump', 'brain-dump'],
+    ['Today', 'today'], ['Week', 'week'], ['Plan', 'plan'], ['Focus', 'focus'], ['Brain dump', 'brain-dump'], ['Later', 'later'],
   ]);
   for (const element of doc.querySelectorAll('span,button,a')) {
     const label = element.textContent.trim();
@@ -1540,6 +1553,20 @@ function renderMobilePlanLists(doc) {
   if (!weeklyTasks.length) weekly.textContent = 'No flexible items for this week.';
   if (!laterTasks.length) later.textContent = 'Nothing in Later. Add a task whenever you are ready.';
   if (!completedTasks.length) completed.textContent = 'Completed tasks will appear here.';
+}
+
+function configureLater(doc) {
+  const laterList = doc.querySelector('#later-items');
+  const empty = doc.querySelector('#later-empty');
+  if (!laterList) return;
+  const laterTasks = activeTasks().filter((task) => !task.scheduledDate && !task.scheduleWindow && !task.recurrence && task.status === 'open').sort(taskOrder);
+  laterList.replaceChildren();
+  for (const task of laterTasks) laterList.append(row(doc, task));
+  if (empty) {
+    if (laterTasks.length) empty.hidden = true;
+    else { empty.hidden = false; empty.textContent = 'Nothing in Later. Add a task whenever you are ready.'; }
+  }
+  doc.querySelector('#add-task')?.addEventListener('click', () => openTaskDialog(doc));
 }
 
 function configureCapture(doc) {
