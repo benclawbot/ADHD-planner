@@ -24,6 +24,7 @@ test('PWA precaches all listed assets, serves a cached page offline and preserve
   let promise;
   handlers.install({waitUntil: p => {promise = p;}}); await promise;
   assert.ok(shell.includes('/src/templates/today.html'));
+  assert.ok(shell.includes('/src/templates/later.html'));
   assert.ok(shell.includes('/src/subtasks.js'));
   assert.ok(shell.includes('/src/recurrence.js'));
   assert.ok(shell.includes('/src/sync-client.js'));
@@ -31,7 +32,7 @@ test('PWA precaches all listed assets, serves a cached page offline and preserve
   assert.ok(shell.includes('/src/voice-worker.js'));
   assert.ok(!shell.includes('/src/vendor/transformers/ort-wasm-simd-threaded.jsep.wasm'), 'the large WASM asset is lazy-loaded, not part of the app shell');
   handlers.activate({waitUntil: p => {promise = p;}}); await promise;
-  assert.deepEqual(deleted, ['tempo-shell-v0', 'tempo-shell-v1', 'tempo-shell-v2', 'tempo-shell-v3', 'tempo-shell-v4', 'tempo-shell-v5', 'tempo-shell-v6', 'tempo-shell-v7', 'tempo-shell-v8', 'tempo-shell-v9', 'tempo-shell-v10']);
+  assert.deepEqual(deleted, Array.from({length: 12}, (_, version) => `tempo-shell-v${version}`));
   handlers.fetch({request: {method:'GET', url:'https://tempo.example/src/templates/today.html'}, respondWith: p => {promise = p;}});
   assert.equal((await promise).cached, '/src/templates/today.html');
   let intercepted = false;
