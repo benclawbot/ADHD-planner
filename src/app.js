@@ -71,16 +71,22 @@ const syncClient = createSyncClient({
   onConflict: (conflict) => renderSyncConflict(frame.contentDocument, conflict),
 });
 
-function bindKeyboardShortcuts() {
-  window.addEventListener('keydown', (event) => {
-    if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA' || event.target.tagName === 'SELECT') return;
+function bindKeyboardShortcuts(doc) {
+  doc.addEventListener('keydown', (event) => {
+    if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) return;
+    if (event.key === 'Escape') {
+      const dialog = doc.querySelector('dialog[open]');
+      if (dialog) { event.preventDefault(); dialog.close(); }
+      return;
+    }
+    if (event.target?.closest?.('input, textarea, select, [contenteditable], [role="textbox"]')) return;
+    if (doc.querySelector('dialog[open]')) return;
     if (event.key === 'n') { event.preventDefault(); openTaskDialog(frame.contentDocument); }
     else if (event.key === '/') { event.preventDefault(); routeTo('plan'); }
-    else if (event.key === 'Escape') { event.preventDefault(); const dialog = frame.contentDocument?.querySelector('dialog'); if (dialog?.open) dialog.close(); }
   });
 }
 
-bindKeyboardShortcuts();
+bindKeyboardShortcuts(document);
 
 function syncableState(localState) {
   const tasks = (localState.tasks ?? []).filter((task) => {
@@ -166,6 +172,7 @@ function renderScreen() {
   frame.onload = () => {
     const doc = frame.contentDocument;
     if (!doc) return;
+    bindKeyboardShortcuts(doc);
     installDialogStyles(doc);
     installToast(doc);
     bindNavigation(doc);
@@ -304,17 +311,58 @@ function showToast(doc, message) {
   toastTimer = window.setTimeout(() => toast.remove(), 3800);
 }
 
+function completeNavigation(doc) {
+  const order = ['Today', 'Week', 'Plan', 'Later', 'Focus', 'Brain dump'];
+  const routes = { Today: 'today', Week: 'week', Plan: 'plan', Later: 'later', Focus: 'focus', 'Brain dump': 'brain-dump' };
+  const candidates = [...doc.querySelectorAll('nav'), ...doc.querySelectorAll('div[style*="bottom: 0"]')];
+  for (const nav of candidates) {
+    const present = new Map([...nav.children]
+      .filter((child) => order.includes(child.textContent.trim()))
+      .map((child) => [child.textContent.trim(), child]));
+    if (!present.has('Today') || !present.has('Focus')) continue;
+    const sample = present.get('Plan') ?? present.get('Week') ?? present.get('Today');
+    for (const label of order) {
+      if (present.has(label)) continue;
+      const item = sample.cloneNode(false);
+      item.textContent = label;
+      item.removeAttribute('aria-current');
+      item.removeAttribute('aria-label');
+      item.dataset.route = routes[label];
+      if (item.tagName === 'BUTTON') item.type = 'button';
+      item.style.fontWeight = '400';
+      item.style.background = 'transparent';
+      item.style.color = nav.matches('nav[aria-label="Main navigation"]') || nav.style.bottom === '0px' ? '#4A5565' : '#1B2430';
+      present.set(label, item);
+    }
+    nav.replaceChildren(...order.map((label) => present.get(label)));
+    if (nav.matches('nav[aria-label="Main navigation"]') || nav.style.bottom === '0px') {
+      nav.style.gap = '2px';
+      nav.style.paddingLeft = '4px';
+      nav.style.paddingRight = '4px';
+      for (const item of nav.children) {
+        item.style.flex = '1 1 0';
+        item.style.minWidth = '0';
+        item.style.fontSize = '12px';
+        item.style.textAlign = 'center';
+      }
+    }
+  }
+}
+
 function bindNavigation(doc) {
+  completeNavigation(doc);
   const labels = new Map([
     ['Today', 'today'], ['Week', 'week'], ['Plan', 'plan'], ['Focus', 'focus'], ['Brain dump', 'brain-dump'], ['Later', 'later'],
   ]);
   for (const element of doc.querySelectorAll('span,button,a')) {
     const label = element.textContent.trim();
-    if (!labels.has(label)) continue;
+    if (!labels.has(label) || element.hasAttribute('data-route')) continue;
     if (element.closest('#plan')) continue;
     if (element.parentElement?.closest('[style*="bottom: 0"]') || element.closest('[style*="flex-direction: column; gap: 14px"]') || element.closest('nav')) {
       element.classList.add('tempo-route-button');
       element.setAttribute('aria-label', `Open ${label}`);
+      if (labels.get(label) === screenName) element.setAttribute('aria-current', 'page');
+      else element.removeAttribute('aria-current');
       element.addEventListener('click', () => routeTo(labels.get(label)));
       if (element.tagName !== 'BUTTON' && element.tagName !== 'A') {
         element.setAttribute('role', 'link');
@@ -325,7 +373,21 @@ function bindNavigation(doc) {
       }
     }
   }
-  doc.querySelectorAll('[data-route]').forEach((button) => button.addEventListener('click', () => routeTo(button.dataset.route)));
+  doc.querySelectorAll('[data-route]').forEach((button) => {
+    if (button.dataset.route === screenName) button.setAttribute('aria-current', 'page');
+    else button.removeAttribute('aria-current');
+    button.addEventListener('click', () => routeTo(button.dataset.route));
+    if (button.tagName !== 'BUTTON' && button.tagName !== 'A') {
+      button.setAttribute('role', 'link');
+      button.tabIndex = 0;
+      button.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          routeTo(button.dataset.route);
+        }
+      });
+    }
+  });
 }
 
 function ensureDialog(doc) {
@@ -2295,7 +2357,17 @@ function configureSettings(doc) {
       try {
         const imported=parseBackup(await selected.text());
         if (!imported) throw new Error('Invalid Tempo backup');
-        if (!window.confirm('Replace the tasks and captures saved in this browser with this backup?')) { file.value=''; return; }
+        const sharedLinkActive = Boolean(storage.getItem(sharedCapabilityKey));
+        if (sharedLinkActive && (sharedPlanBootstrapPending || !sharedPlanRecoveryReady)) {
+          showToast(doc, 'Wait for the shared plan to finish loading before importing a backup.');
+          file.value = '';
+          return;
+        }
+        const confirmation = sharedLinkActive
+          ? 'Replace the SHARED planner for everyone with this backup? Imported tasks and captures may overwrite the shared plan on every connected device when syncing resumes. Export the current plan first.'
+          : 'Replace the tasks and captures saved in this browser with this backup?';
+        if (!window.confirm(confirmation)) { file.value = ''; return; }
+        if (sharedLinkActive && !window.confirm('Final confirmation: replace the shared plan across devices with this backup?')) { file.value = ''; return; }
         saveLocalState(imported); reminderNotified.clear(); transitionNotified.clear();
         routeTo('today'); showToast(frame.contentDocument,'Backup restored on this device.');
       } catch { showToast(doc,'That file is not a valid Tempo backup. Your saved data was not changed.'); }

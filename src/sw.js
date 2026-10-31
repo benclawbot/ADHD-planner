@@ -1,10 +1,10 @@
-const CACHE = 'tempo-shell-v11';
+const CACHE = 'tempo-shell-v12';
 const CACHE_PREFIX = 'tempo-shell-';
 const SHELL = [
   '/src/', '/src/index.html', '/src/app.js', '/src/model.js', '/src/subtasks.js', '/src/planning.js', '/src/recurrence.js', '/src/sync-client.js', '/src/voice-capture.js', '/src/voice-worker.js', '/src/manifest.webmanifest',
   '/src/templates/today.html', '/src/templates/focus.html', '/src/templates/brain-dump.html',
   '/src/templates/settings.html', '/src/templates/sync-settings.html', '/src/templates/desktop-today.html', '/src/templates/desktop-week.html',
-  '/src/templates/mobile-plan.html',
+  '/src/templates/mobile-plan.html', '/src/templates/later.html',
   '/src/assets/fonts/atkinson-e15e89caea888e8d.woff2', '/src/assets/fonts/atkinson-a60206dd4793eb88.woff2',
   '/src/assets/fonts/atkinson-69b1029853229409.woff2', '/src/assets/fonts/atkinson-1cc7c0c5fbf16d1b.woff2',
   '/src/assets/icon-192.png', '/src/assets/icon-512.png',

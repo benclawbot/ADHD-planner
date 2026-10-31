@@ -37,3 +37,5 @@ jobs:
         workdir: sites/tempo-planner
       - run: npm test
         workdir: sites/tempo-planner
+      - run: npm run build
+        workdir: sites/tempo-planner
