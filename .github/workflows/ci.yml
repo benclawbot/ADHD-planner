@@ -32,10 +32,10 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-        workdir: sites/tempo-planner
+        working-directory: sites/tempo-planner
       - run: npm run lint
-        workdir: sites/tempo-planner
+        working-directory: sites/tempo-planner
       - run: npm test
-        workdir: sites/tempo-planner
+        working-directory: sites/tempo-planner
       - run: npm run build
-        workdir: sites/tempo-planner
+        working-directory: sites/tempo-planner
