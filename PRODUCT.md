@@ -28,7 +28,7 @@ The intended devices are Android and Windows 11. The approved source artifact de
 
 ## Capabilities and Constraints
 
-The initial implementation should make local task creation, capture, editable linked subtasks, ordering, removal, a basic focus timer, and reminder preferences useful. Unscheduled work stays in Later unless the user schedules it. A two-minute pre-departure reminder is an adjustable, per-event starting value. Cloud sync, accounts, native notification scheduling, voice capture, and native Android / Windows packages are open implementation gaps; do not imply that the reference's static sample labels are operational functionality.
+The initial implementation should make local task creation, capture, editable linked subtasks, ordering, removal, a basic focus timer, on-device voice capture, and reminder preferences useful. Unscheduled work stays in Later unless the user schedules it. A two-minute pre-departure reminder is an adjustable, per-event starting value. Accounts, native notification scheduling, and native Android / Windows packages are open implementation gaps; do not imply that the reference's static sample labels are operational functionality.
 
 ## Brand Commitments
 
@@ -37,8 +37,8 @@ Tempo's original supplied HTML is the visual authority. Match its depicted scree
 ## Evidence on Hand
 
 - `Tempo Planner - capability inventory and specification.md` is a working specification and capability inventory, not a user-approved final product contract.
-- `.codex-attachments/a1853606-c2cb-44ba-b7a1-8e662ae11d8d/6b1d4bb0-d41c-4651-91a5-5119995bc123/Tempo Planner _1_.html` contains six nested, compressed static screen templates. Their displayed actions do not have application handlers.
-- No sync service, account system, notification scheduler, speech service, or native package was supplied.
+- The six reference screen templates are retained as standalone templates in `src/templates/`; their displayed actions do not have application handlers.
+- A file-based sync service (`server/sync-server.mjs`) and on-device voice capture exist; accounts, notification scheduling, and native packages were not supplied.
 
 ## Product Principles
 

@@ -14,25 +14,54 @@ import {
 const MAX_BODY_BYTES = 1024 * 1024;
 const RETRY_LIMIT = 5;
 
-function json(body, status = 200) {
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const RATE_LIMIT_MAX = 120;
+
+const rateLimitBuckets = new Map();
+
+function rateLimitKey(request) {
+  const token = /^Bearer ([A-Za-z0-9_-]{43})$/.exec(request.headers.get("authorization") ?? "")?.[1];
+  return token ?? "anonymous";
+}
+
+function checkRateLimit(key, now = Date.now()) {
+  const bucket = rateLimitBuckets.get(key);
+  if (!bucket || now >= bucket.resetAt) {
+    rateLimitBuckets.set(key, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+    return { allowed: true, retryAfterMs: 0 };
+  }
+  bucket.count += 1;
+  if (bucket.count > RATE_LIMIT_MAX) {
+    return { allowed: false, retryAfterMs: bucket.resetAt - now };
+  }
+  return { allowed: true, retryAfterMs: 0 };
+}
+
+function json(body, status = 200, headers = {}) {
   return Response.json(body, {
     status,
     headers: {
       "Cache-Control": "no-store",
       "X-Content-Type-Options": "nosniff",
       "Referrer-Policy": "no-referrer",
+      ...headers,
     },
   });
 }
 
-function fail(status, code, message, details) {
+function fail(status, code, message, details, headers) {
   const error = { code, message };
   if (details !== undefined) error.details = details;
-  return json({ error }, status);
+  return json({ error }, status, headers);
 }
 
 export function apiErrorResponse(error) {
-  if (error instanceof SyncError) return fail(error.status, error.code, error.message, error.details);
+  if (error instanceof SyncError) {
+    const headers = error.status === 429 && error.details?.retryAfterMs != null
+      ? { "Retry-After": String(Math.ceil(error.details.retryAfterMs / 1000)) }
+      : undefined;
+    return fail(error.status, error.code, error.message, error.details, headers);
+  }
   return fail(500, "internal_error", "The sync request could not be completed.");
 }
 
@@ -137,6 +166,10 @@ export async function handleSessionRequest(request, expectedDigest) {
 
 export async function handleSyncRequest(request, repository, expectedDigest, now = new Date()) {
   try {
+    const limit = checkRateLimit(rateLimitKey(request), now.getTime());
+    if (!limit.allowed) {
+      throw new SyncError(429, "rate_limited", "Too many sync requests. Please wait before trying again.", { retryAfterMs: limit.retryAfterMs });
+    }
     if (!await authorizeSharedCapability(request, expectedDigest)) throw new SyncError(401, "invalid_shared_link", "Open Tempo using the shared planner link to sync.");
     const authorizedRepository = typeof repository === "function" ? repository() : repository;
     const syncRepository = await authorizedRepository;

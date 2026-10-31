@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowJs": true,
+    "checkJs": false,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "strict": false,
+    "noImplicitAny": false,
+    "noImplicitOverride": true,
+    "types": ["node"]
+  },
+  "include": ["src/**/*.js", "scripts/**/*.mjs"],
+  "exclude": ["node_modules", "dist", ".wrangler", ".vinext", ".sites-runtime"]
+}
