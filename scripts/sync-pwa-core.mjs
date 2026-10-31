@@ -16,6 +16,7 @@ const CORE = [
   "recurrence.js",
   "subtasks.js",
   "voice-capture.js",
+  "voice-worker.js",
 ];
 
 async function main() {

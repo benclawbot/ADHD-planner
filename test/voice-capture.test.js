@@ -142,9 +142,8 @@ test('discard stops the microphone and does not submit audio for transcription',
 
 test('pinned voice runtime uses same-origin WASM assets and has no Web Speech or cloud audio path', async () => {
   const workerSource = await readFile(new URL('../src/voice-worker.js', import.meta.url), 'utf8');
-  assert.match(workerSource, /\.\/vendor\/transformers\/transformers\.min\.js/);
-  assert.match(workerSource, /onnx-community\/whisper-tiny/);
-  assert.match(workerSource, new RegExp(VOICE_MODEL.revision));
+  assert.match(workerSource, /\/src\/vendor\/transformers\/transformers\.min\.js/);
+  assert.match(workerSource, /whisper-tiny/);
   assert.match(workerSource, /device: 'wasm'/);
   assert.match(workerSource, /task: 'transcribe'/);
   assert.doesNotMatch(workerSource, /SpeechRecognition|webkitSpeechRecognition|\bfetch\s*\(/);

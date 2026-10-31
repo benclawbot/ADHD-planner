@@ -1,11 +1,27 @@
-import { env, pipeline } from './vendor/transformers/transformers.min.js';
-
-const MODEL_ID = 'onnx-community/whisper-tiny';
-const MODEL_REVISION = 'ff4177021cc41f7db950912b73ea4fdf7d01d8e7';
-const WASM_ASSET_DIRECTORY = new URL('./vendor/transformers/', import.meta.url).href;
+const TRANSFORMERS_URL = '/src/vendor/transformers/transformers.min.js';
 
 let transcriber = null;
 let loading = null;
+const nativeFetch = globalThis.fetch.bind(globalThis);
+
+// Workers static assets are limited to 25 MiB each. Reassemble the 29 MiB
+// quantized decoder from same-origin parts before ONNX Runtime reads it.
+globalThis.fetch = async (input, init) => {
+  const inputUrl = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
+  const requestUrl = new URL(inputUrl, self.location.origin);
+  const method = init?.method ?? (typeof Request !== 'undefined' && input instanceof Request ? input.method : 'GET');
+  if (requestUrl.pathname !== '/src/vendor/whisper-tiny/onnx/decoder_model_merged_quantized.onnx' || method !== 'GET') {
+    return nativeFetch(input, init);
+  }
+  const parts = await Promise.all([0, 1, 2, 3].map(async (part) => {
+    const response = await nativeFetch(`${requestUrl.pathname}.part-${String(part).padStart(3, '0')}`);
+    if (!response.ok) throw new Error(`Speech model part ${part + 1} could not be loaded.`);
+    return response.arrayBuffer();
+  }));
+  return new Response(new Blob(parts, { type: 'application/octet-stream' }), {
+    headers: { 'content-type': 'application/octet-stream' },
+  });
+};
 
 self.addEventListener('message', async (event) => {
   const { requestId, type } = event.data ?? {};
@@ -50,14 +66,16 @@ async function loadTranscriber(requestId) {
   if (loading) return loading;
 
   loading = (async () => {
+    const { env, pipeline } = await import(new URL(TRANSFORMERS_URL, self.location.origin));
     env.useBrowserCache = true;
-    if (env.backends?.onnx?.wasm) {
-      env.backends.onnx.wasm.wasmPaths = WASM_ASSET_DIRECTORY;
-      env.backends.onnx.wasm.numThreads = 1;
-    }
+    env.useWasmCache = true;
+    env.allowRemoteModels = false;
+    env.allowLocalModels = true;
+    env.localModelPath = '/src/vendor/';
+    env.backends.onnx.wasm.wasmPaths = '/src/vendor/transformers/';
+    if (env.backends?.onnx?.wasm) env.backends.onnx.wasm.numThreads = 1;
 
-    transcriber = await pipeline('automatic-speech-recognition', MODEL_ID, {
-      revision: MODEL_REVISION,
+    transcriber = await pipeline('automatic-speech-recognition', 'whisper-tiny', {
       dtype: 'q8',
       device: 'wasm',
       progress_callback: (progress) => {
