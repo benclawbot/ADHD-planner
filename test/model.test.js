@@ -22,6 +22,15 @@ test('capture parsing splits lines and comma separated thoughts without inventin
   ]);
 });
 
+test('a single dictated thought can be reviewed and sent to Later', () => {
+  const proposal = createCaptureProposal("Okay, that's what I can do for me.");
+  assert.deepEqual(proposal.items.map((item) => item.title), ["Okay, that's what I can do for me."]);
+  const accepted = acceptCaptureProposal(createDemoState(), proposal, proposal.items);
+  assert.equal(accepted.tasks.length, 1);
+  assert.equal(accepted.tasks[0].scheduledDate, '');
+  assert.equal(accepted.capture.text, proposal.sourceText);
+});
+
 test('reference brain-dump copy is identifiable so it can stay display-only', () => {
   const example = 'call the bank re card, budget, gym legs, reply to Marc, buy birthday card, dentist sometime';
   assert.equal(isReferenceCaptureText(example), true);
