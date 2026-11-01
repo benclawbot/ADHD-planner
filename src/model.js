@@ -47,10 +47,15 @@ export function createDemoState() {
 }
 
 export function parseCapture(text) {
-  return text
-    .split(/[\n,;]+/)
-    .map((title) => title.trim())
-    .filter(Boolean);
+  return String(text ?? '')
+    .split(/[\n;]+/)
+    .flatMap((line) => {
+      const items = line.split(',').map((title) => title.trim()).filter(Boolean);
+      if (items.length > 1 && /^(?:okay|ok|well|actually|yes|no|so|hey|hi)$/i.test(items[0])) {
+        items.splice(0, 2, `${items[0]}, ${items[1]}`);
+      }
+      return items;
+    });
 }
 
 export function isReferenceCaptureText(text) {
