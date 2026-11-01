@@ -2015,7 +2015,7 @@ function openCaptureReview(doc, proposal, onAccept) {
 
   const closeReview = () => {
     review.remove();
-    doc.querySelector('#tempo-dump')?.focus({ preventScroll: true });
+    doc.querySelector('#tempo-dump')?.parentElement?.querySelector('button')?.focus({ preventScroll: true });
   };
 
   accept.addEventListener('click', () => {
