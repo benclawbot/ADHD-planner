@@ -254,6 +254,7 @@ function applyResponsive(doc, phoneView, wide) {
     .tempo-capture-group{padding:4px 0}
     .tempo-capture-group details{font-size:14px;color:#4A5565;padding:2px 4px}
     .tempo-capture-group p{margin:6px 0 0;color:#1B2430;overflow-wrap:anywhere}
+    .tempo-capture-review-panel{box-sizing:border-box;width:100%;padding:14px;border:1px solid #D5DCE6;border-radius:12px;background:#FFFFFF}
     .tempo-capture-review{display:grid;gap:12px}
     .tempo-capture-review .source{margin:0;padding:10px 12px;border-radius:10px;background:#E9EEF6;overflow-wrap:anywhere;font-size:14px}
     .tempo-capture-review ol{display:grid;gap:8px;margin:0;padding:0;list-style:none}
@@ -1690,6 +1691,7 @@ function configureCapture(doc) {
   }
   textarea.addEventListener('input', () => {
     if (showingExample) return;
+    doc.querySelector('#tempo-capture-review')?.remove();
     saveDraft(textarea.value);
   });
 
@@ -1935,20 +1937,21 @@ function openVoiceCaptureDialog(doc, { textarea, saveDraft, isShowingExample, cl
 }
 
 function openCaptureReview(doc, proposal, onAccept) {
-  let dialog = doc.querySelector('#tempo-capture-review');
-  if (!dialog) {
-    dialog = doc.createElement('dialog');
-    dialog.id = 'tempo-capture-review';
-    dialog.className = 'tempo-dialog';
-    dialog.setAttribute('aria-labelledby', 'tempo-capture-review-title');
-    doc.body.append(dialog);
-  }
-  dialog.replaceChildren();
+  doc.querySelector('#tempo-capture-review')?.remove();
+  const card = doc.querySelector('#tempo-dump')?.parentElement;
+  if (!card) return;
+
+  const review = doc.createElement('section');
+  review.id = 'tempo-capture-review';
+  review.className = 'tempo-dialog tempo-capture-review-panel';
+  review.setAttribute('role', 'region');
+  review.setAttribute('aria-labelledby', 'tempo-capture-review-title');
 
   const content = doc.createElement('div');
   content.className = 'tempo-capture-review';
   const title = doc.createElement('h2');
   title.id = 'tempo-capture-review-title';
+  title.tabIndex = -1;
   title.textContent = 'Review the split';
   const explanation = doc.createElement('p');
   explanation.textContent = 'Edit each title and choose which thoughts become tasks. New tasks stay in Later; no dates, estimates or categories are inferred.';
@@ -1995,28 +1998,47 @@ function openCaptureReview(doc, proposal, onAccept) {
   cancel.textContent = 'Cancel';
   actions.append(accept, cancel);
   content.append(title, explanation, source, list, actions);
-  dialog.append(content);
+  review.append(content);
+  card.after(review);
+
+  const root = doc.body.firstElementChild;
+  if (root) {
+    root.style.height = 'auto';
+    root.style.minHeight = '100dvh';
+    root.style.overflow = 'visible';
+    const nav = [...root.children].find((child) => child.style.position === 'absolute' && child.style.bottom === '0px');
+    if (nav) {
+      nav.style.position = 'sticky';
+      nav.style.marginTop = 'auto';
+    }
+  }
+
+  const closeReview = () => {
+    review.remove();
+    doc.querySelector('#tempo-dump')?.focus({ preventScroll: true });
+  };
 
   accept.addEventListener('click', () => {
     const selected = [];
-    for (const include of dialog.querySelectorAll('[data-candidate-include]')) {
+    for (const include of review.querySelectorAll('[data-candidate-include]')) {
       if (!include.checked) continue;
-      const input = dialog.querySelector(`[data-candidate-title="${CSS.escape(include.dataset.candidateInclude)}"]`);
-      const value = input.value.trim();
+      const input = [...review.querySelectorAll('[data-candidate-title]')]
+        .find((candidate) => candidate.dataset.candidateTitle === include.dataset.candidateInclude);
+      const value = input?.value.trim() ?? '';
       if (!value) {
-        input.setCustomValidity('Enter a task title or leave this item unchecked.');
-        input.reportValidity();
-        input.focus();
+        input?.setCustomValidity('Enter a task title or leave this item unchecked.');
+        input?.reportValidity();
+        input?.focus();
         return;
       }
       input.setCustomValidity('');
       selected.push({ id: include.dataset.candidateInclude, title: value });
     }
-    if (onAccept(selected)) dialog.close();
+    if (onAccept(selected)) closeReview();
   });
-  cancel.addEventListener('click', () => dialog.close());
-  dialog.showModal();
-  dialog.querySelector('[data-candidate-title]')?.focus();
+  cancel.addEventListener('click', closeReview);
+  review.scrollIntoView({ block: 'start', behavior: 'smooth' });
+  title.focus({ preventScroll: true });
 }
 
 function renderCaptureGroup(doc, capture, host) {
@@ -2820,7 +2842,7 @@ function scheduleTransitionWarning(doc) {
 }
 
 window.addEventListener('hashchange', routeFromLocation);
-window.addEventListener('resize', () => renderScreen());
+window.matchMedia('(min-width: 768px)').addEventListener('change', () => renderScreen());
 window.addEventListener('focus', () => {
   if (state.focus?.status === 'running' && state.focus.dueAt <= Date.now()) updateFocusClock(frame.contentDocument);
   scheduleDepartureReminder(frame.contentDocument);
